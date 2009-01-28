@@ -1,0 +1,107 @@
+final srcDir = 'src/'
+final testDir = 'tests/'
+final libDir = 'lib'
+
+final buildDir = 'target/'
+final classDir = buildDir + '/classes'
+final reportsDir = testDir + '/reports'
+
+final distDir = buildDir + '/dist'
+final docsDir = buildDir + '/docs'
+
+final jarFile = distDir + '/easydata.0.jar'
+
+ant.path(id:'lib') {
+    fileset(
+      dir: libDir,
+      includes: "**/*.jar"
+    )
+}
+
+ant.path(id: 'build.classpath') {
+    path(location: classDir)
+    path(refid: 'lib')
+}
+
+// def groovyc = {srcdir, classdir
+//     ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : "build.classpath")
+//     ant.groovyc(srcdir: srcdir, destdir: classdir) {
+//        classpath(){
+//          path(refid:"build.classpath")
+//        }
+//     }
+// }
+
+target(clean: 'Clean all the required directories') {
+    def dirs = [classDir, distDir, buildDir]
+    dirs.each() { ant.delete(dir: it) }
+}
+
+target(initDirs: 'Create all the required directories') {
+    def dirs = [reportsDir, buildDir, classDir, distDir, docsDir]
+    dirs.each() { ant.mkdir(dir: it) }
+}
+
+target(compile: 'Compile source to build directory.') {
+    depends(initDirs)
+    
+    ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : "build.classpath")
+    ant.groovyc(srcdir: srcDir, destdir: classDir) {
+      classpath(){
+        path(refid:"build.classpath")
+      }
+    }
+    
+    ant.copy(todir:"${classDir}"){
+      fileset(dir:"${srcDir}")
+    }
+
+    ant.copy(todir:"${classDir}"){
+      fileset(dir:"${testDir}"){
+        include(name:"Script.groovy")
+      }
+    }
+}
+
+target(test: 'Run the test suite for the code') {
+  depends("compile")
+
+  ant.taskdef(name:"easyb", classname:"org.disco.easyb.ant.BehaviorRunnerTask"){
+    classpath(){
+      pathelement(location:"${libDir}/easyb-0.9.jar")
+    }
+  }
+
+  ant.easyb(failureProperty:"easyb.failed"){
+
+    classpath(){
+      path(refid:"build.classpath")
+      pathelement(location:"${libDir}/easyb-0.9.jar")
+      pathelement(location:testDir)
+    }
+
+    report(location:"${reportsDir}/specs-report.txt", format:"txtstory")
+
+    behaviors(dir:testDir){
+      include(name:"**/*Story.groovy")
+      include(name:"**/*.story")
+      include(name:"**/*Specification.groovy")
+      include(name:"**/*.specification")
+    }
+  }
+
+  ant.fail(if:"easyb.failed", message:"easyb specifications have failed")
+}
+
+target(jar: 'Jar up the code') {
+  depends(test)
+  ant.jar(destfile:distDir) {
+      include(name:"${libDir}/*.jar")
+  }
+  
+  ant.copy(todir:"${distDir}/lib"){
+    fileset(dir:"${libDir}")
+  }
+}
+
+setDefaultTarget("jar")

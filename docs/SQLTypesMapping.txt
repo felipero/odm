@@ -1,0 +1,41 @@
+// Catar as conversões de tipo aqui:
+//http://anonsvn.jboss.org/repos/hibernate/core/trunk/core/src/main/java/org/hibernate/dialect/
+
+// MYSQL
+    registerColumnType( Types.BIT, "bit" );
+    registerColumnType( Types.BIGINT, "bigint" );
+    registerColumnType( Types.SMALLINT, "smallint" );
+    registerColumnType( Types.TINYINT, "tinyint" );
+    registerColumnType( Types.INTEGER, "integer" );
+    registerColumnType( Types.CHAR, "char(1)" );
+    registerColumnType( Types.FLOAT, "float" );
+    registerColumnType( Types.DOUBLE, "double precision" );
+    registerColumnType( Types.DATE, "date" );
+    registerColumnType( Types.TIME, "time" );
+    registerColumnType( Types.TIMESTAMP, "datetime" );
+    registerColumnType( Types.VARBINARY, "longblob" );
+    registerColumnType( Types.VARBINARY, 16777215, "mediumblob" );
+    registerColumnType( Types.VARBINARY, 65535, "blob" );
+    registerColumnType( Types.VARBINARY, 255, "tinyblob" );
+    registerColumnType( Types.NUMERIC, "decimal($p,$s)" );
+    registerColumnType( Types.BLOB, "longblob" );
+    registerColumnType( Types.CLOB, "longtext" );
+
+
+// PostgreSQL
+    registerColumnType( Types.BIT, "bool" );
+    registerColumnType( Types.BIGINT, "int8" );
+    registerColumnType( Types.SMALLINT, "int2" );
+    registerColumnType( Types.TINYINT, "int2" );
+    registerColumnType( Types.INTEGER, "int4" );
+    registerColumnType( Types.CHAR, "char(1)" );
+    registerColumnType( Types.VARCHAR, "varchar($l)" );
+    registerColumnType( Types.FLOAT, "float4" );
+    registerColumnType( Types.DOUBLE, "float8" );
+    registerColumnType( Types.DATE, "date" );
+    registerColumnType( Types.TIME, "time" );
+    registerColumnType( Types.TIMESTAMP, "timestamp" );
+    registerColumnType( Types.VARBINARY, "bytea" );
+    registerColumnType( Types.CLOB, "text" );
+    registerColumnType( Types.BLOB, "oid" );
+    registerColumnType( Types.NUMERIC, "numeric($p, $s)" );
