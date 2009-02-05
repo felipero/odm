@@ -1,7 +1,7 @@
-import net.fratech.easyd.*
+import net.fratech.odm.*
 import groovy.sql.Sql
 
-def sql = Sql.newInstance("jdbc:mysql://localhost:3306/easyd_dev", "easyd", "easyd", "com.mysql.jdbc.Driver")
+def sql = Sql.newInstance("jdbc:mysql://localhost:3306/odm_dev", "odm", "odm", "com.mysql.jdbc.Driver")
 
 def rs = sql.connection.metaData.getTypeInfo()
 

@@ -1,0 +1,13 @@
+import net.fratech.odm.DataMapImpl
+import net.fratech.odm.DataMap
+import net.fratech.odm.util.PropertyMapFactory
+
+class Foo {
+  String bar
+  int fooBar
+}
+
+it "should find the correct properties", {
+  propertyMapList = PropertyMapFactory.findPersistentProperties(new Foo())
+  propertyMapList.shouldBe true
+}

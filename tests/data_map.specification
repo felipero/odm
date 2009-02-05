@@ -1,0 +1,72 @@
+import net.fratech.odm.DataMapImpl
+import net.fratech.odm.DataMap
+import net.fratech.odm.PropertyMapImpl
+import net.fratech.odm.util.PropertyMapFactory
+
+class Foo {
+  String bar
+  int fooBar
+}
+
+before "", {
+  dm = new DataMapImpl()
+  foo = new Foo()
+}
+
+it "should create a DataMap instance", {
+  dm.shouldNotBe null
+  ensure(dm instanceof DataMap)
+}
+
+it "should load a DataMap based on domain objects", {
+  def factoryMock = new groovy.mock.interceptor.StubFor(net.fratech.odm.util.PropertyMapFactory)
+  factoryMock.demand.findPersistentProperties {return [new PropertyMapImpl(), new PropertyMapImpl()]}
+
+  factoryMock.use {
+    dm.loadDataMap(foo)
+  }
+  
+  dm.tableName.shouldBe "foo"
+  dm.domainClass.shouldBe Foo
+  dm.propertyMapList.shouldNotBe null
+  dm.propertyMapList.isEmpty().shouldBe false
+  dm.propertyMapList.size().shouldBe 2
+}
+
+it "should load a DataMap based on domain objects when passing the property map list", {
+  dm.loadDataMap(foo, [new PropertyMapImpl(), new PropertyMapImpl()])
+  
+  dm.tableName.shouldBe "foo"
+  dm.domainClass.shouldBe Foo
+  dm.propertyMapList.shouldNotBe null
+  dm.propertyMapList.isEmpty().shouldBe false
+  dm.propertyMapList.size().shouldBe 2
+}
+
+it "should ignore and not add a non PropertyMap instance in the property map list when loading", {
+  dm.loadDataMap(foo, [new PropertyMapImpl(), new Object()])
+  dm.propertyMapList.shouldNotBe null
+  dm.propertyMapList.isEmpty().shouldBe false
+  dm.propertyMapList.size().shouldBe 1
+}
+
+it "should throw a MappingException when loading with a object that has no persistent properties", {
+  ensureThrows(net.fratech.odm.exceptions.MappingException){
+    dm.loadDataMap(new Object())
+  }
+}
+
+it "should throw a ODMException when loading with an empty columns list", {
+  ensureThrows(net.fratech.odm.exceptions.MappingException){
+    dm.loadDataMap(foo, [])
+  }
+}
+
+it "should throw a MappingException when loading with a null object", {
+  ensureThrows(net.fratech.odm.exceptions.MappingException){
+    dm.loadDataMap(null)
+  }
+  ensureThrows(net.fratech.odm.exceptions.MappingException){
+    dm.loadDataMap(null, null)
+  }
+}

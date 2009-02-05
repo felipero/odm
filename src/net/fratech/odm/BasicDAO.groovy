@@ -1,4 +1,4 @@
-package net.fratech.easyd
+package net.fratech.odm
 
 import groovy.sql.Sql
 

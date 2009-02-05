@@ -1,0 +1,8 @@
+import net.fratech.odm.exceptions.MappingException
+
+it "should be created", {
+  me = new MappingException("fooTable", Object, "explanation")
+  me.tableName.shouldBe "fooTable"
+  me.explanation.shouldBe "explanation"
+  me.domainClass.shouldBe Object
+}

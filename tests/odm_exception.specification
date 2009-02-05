@@ -1,0 +1,7 @@
+import net.fratech.odm.exceptions.ODMException
+
+it "should be created", {
+  oe = new ODMException("message","explanation")
+  oe.message.shouldBe "message - explanation"
+  oe.explanation.shouldBe "explanation"
+}

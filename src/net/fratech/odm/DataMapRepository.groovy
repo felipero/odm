@@ -1,4 +1,4 @@
-package net.fratech.easydata
+package net.fratech.odm
 
 class DataMapRepository {
   JDBCTypesMapper types

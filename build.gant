@@ -1,4 +1,5 @@
 final srcDir = 'src/'
+final resourcesDir = 'resources/'
 final testDir = 'tests/'
 final libDir = 'lib'
 
@@ -9,7 +10,7 @@ final reportsDir = testDir + '/reports'
 final distDir = buildDir + '/dist'
 final docsDir = buildDir + '/docs'
 
-final jarFile = distDir + '/easydata.0.jar'
+final jarFile = distDir + '/fratech_odm.0.jar'
 
 ant.path(id:'lib') {
     fileset(
@@ -23,14 +24,14 @@ ant.path(id: 'build.classpath') {
     path(refid: 'lib')
 }
 
-// def groovyc = {srcdir, classdir
-//     ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : "build.classpath")
-//     ant.groovyc(srcdir: srcdir, destdir: classdir) {
-//        classpath(){
-//          path(refid:"build.classpath")
-//        }
-//     }
-// }
+def groovyc = { srcdir, classdir ->
+   ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : "build.classpath")
+   ant.groovyc(srcdir: srcdir, destdir: classdir) {
+     classpath(){
+       path(refid:"build.classpath")
+     }
+   }
+}
 
 target(clean: 'Clean all the required directories') {
     def dirs = [classDir, distDir, buildDir]
@@ -38,28 +39,16 @@ target(clean: 'Clean all the required directories') {
 }
 
 target(initDirs: 'Create all the required directories') {
-    def dirs = [reportsDir, buildDir, classDir, distDir, docsDir]
+    def dirs = [reportsDir, buildDir, classDir, distDir, docsDir, resourcesDir]
     dirs.each() { ant.mkdir(dir: it) }
 }
 
 target(compile: 'Compile source to build directory.') {
     depends(initDirs)
-    
-    ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : "build.classpath")
-    ant.groovyc(srcdir: srcDir, destdir: classDir) {
-      classpath(){
-        path(refid:"build.classpath")
-      }
-    }
+    groovyc(srcDir, classDir)
     
     ant.copy(todir:"${classDir}"){
-      fileset(dir:"${srcDir}")
-    }
-
-    ant.copy(todir:"${classDir}"){
-      fileset(dir:"${testDir}"){
-        include(name:"Script.groovy")
-      }
+      fileset(dir:"${resourcesDir}")
     }
 }
 
@@ -68,24 +57,24 @@ target(test: 'Run the test suite for the code') {
 
   ant.taskdef(name:"easyb", classname:"org.disco.easyb.ant.BehaviorRunnerTask"){
     classpath(){
-      pathelement(location:"${libDir}/easyb-0.9.jar")
+      pathelement(location:"${libDir}/easyb-0.9.4.jar")
     }
   }
 
   ant.easyb(failureProperty:"easyb.failed"){
 
-    classpath(){
+    classpath() {
       path(refid:"build.classpath")
-      pathelement(location:"${libDir}/easyb-0.9.jar")
-      pathelement(location:testDir)
+      pathelement(location:"${libDir}/easyb-0.9.4.jar")
+      pathelement(location:"tests")
     }
 
-    report(location:"${reportsDir}/specs-report.txt", format:"txtstory")
+    report(location: "${reportsDir}/easyb-report.xml", format: "xml")
+    report(location: "${reportsDir}/story-report.txt", format: "txtstory")
+    report(location: "${reportsDir}/specification-report.txt", format: "txtspecification")
 
     behaviors(dir:testDir){
-      include(name:"**/*Story.groovy")
       include(name:"**/*.story")
-      include(name:"**/*Specification.groovy")
       include(name:"**/*.specification")
     }
   }
@@ -96,7 +85,7 @@ target(test: 'Run the test suite for the code') {
 target(jar: 'Jar up the code') {
   depends(test)
   ant.jar(destfile:distDir) {
-      include(name:"${libDir}/*.jar")
+    include(name:"${libDir}/*.jar")
   }
   
   ant.copy(todir:"${distDir}/lib"){
@@ -104,4 +93,4 @@ target(jar: 'Jar up the code') {
   }
 }
 
-setDefaultTarget("jar")
+setDefaultTarget("test")

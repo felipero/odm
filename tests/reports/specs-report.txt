@@ -1,9 +1,0 @@
- 1 scenario(including 1 pending) executed successfully
-
-  Story: basic d a o
-
-    scenario Non-Gold level customer with $100 or more
-      given a non-Gold level customer
-      when they have $100 or more in their shopping cart
-      then they should receive a $10 discount [PENDING]
-      then they should be emailed a coupon
