@@ -1,0 +1,47 @@
+Fratech ODM TODO List:
+
+- Test it all from a pure Java progamm
+
+- In DataMap
+  - Deal with mapping complex properties (one2one)
+  - Deal with mapping of relationships (one2many, many2one, many2many)
+  - Ignore transient properties
+  - Ignore hasMany, belongsTo properties
+  - Ignore other configuration properties
+
+- PropertyMap
+  - Treat boolean values
+  - Treat DateValues
+  - Treat Blob, Lob and ther big sql types
+  - Treat Binary types
+  - Treat Serializable objects
+  - Read Per property validation constraints
+
+- Implement SQLEngine
+
+- Implement sql generation methods in GenericMapper
+  - Insert
+  - Delete
+  - Update
+  - Save
+  - listAll
+  - findById
+  - find (by example)
+  - Dinamic Finders (combinations of properties names) || Criteria DSL
+  - Treat Lazy/Eager initialization
+
+- Implement DataMapRepository
+  - Impleent caching of DataMap
+
+- Implement TemplateEngine
+
+- Allow user to specify a sql template to be used instead of default sql generation
+
+- Implement ConfigurationEngine
+  - Create a model of configuration file
+  - Read this configuration file
+  - Allows multiple envorinments
+
+- Implement LogEngine
+  - Allow user to set the log output (in configuration?)
+  - Allow user to set log level (in configuration and per env)

@@ -17,7 +17,7 @@ it "should find the correct properties", {
   propertyMapList.size().shouldBe 2
   propertyMapList.shouldHave new PropertyMapImpl("bar","bar", String, dm)
   propertyMapList.shouldHave new PropertyMapImpl("foobar","fooBar", int.class, dm)
-  propertyMapList.shouldNotHave new PropertyMapImpl("foobara","fooBara", int.class, dm)
+  propertyMapList.shouldNotHave new PropertyMapImpl("metaclass","metaClass", MetaClass.class, dm)
 }
 
 it "should return null when loading with a object that is null or has no persistent properties", {
