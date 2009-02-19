@@ -20,7 +20,7 @@ it "should create a DataMap instance", {
 
 it "should load a DataMap based on domain objects", {
   def factoryMock = new groovy.mock.interceptor.StubFor(net.fratech.odm.util.PropertyMapFactory)
-  factoryMock.demand.findPersistentProperties {return [new PropertyMapImpl(), new PropertyMapImpl()]}
+  factoryMock.demand.findPersistentProperties {obj, dm -> return [new PropertyMapImpl(null, null, null, null), new PropertyMapImpl(null, null, null, null)]}
 
   factoryMock.use {
     dm.loadDataMap(foo)
@@ -34,7 +34,7 @@ it "should load a DataMap based on domain objects", {
 }
 
 it "should load a DataMap based on domain objects when passing the property map list", {
-  dm.loadDataMap(foo, [new PropertyMapImpl(), new PropertyMapImpl()])
+  dm.loadDataMap(foo, [new PropertyMapImpl(null, null, null, null), new PropertyMapImpl(null, null, null, null)])
   
   dm.tableName.shouldBe "foo"
   dm.domainClass.shouldBe Foo
@@ -44,19 +44,28 @@ it "should load a DataMap based on domain objects when passing the property map 
 }
 
 it "should ignore and not add a non PropertyMap instance in the property map list when loading", {
-  dm.loadDataMap(foo, [new PropertyMapImpl(), new Object()])
+  dm.loadDataMap(foo, [new PropertyMapImpl(null, null, null, null), new Object()])
   dm.propertyMapList.shouldNotBe null
   dm.propertyMapList.isEmpty().shouldBe false
   dm.propertyMapList.size().shouldBe 1
 }
 
 it "should throw a MappingException when loading with a object that has no persistent properties", {
+  def factoryMock = new groovy.mock.interceptor.StubFor(net.fratech.odm.util.PropertyMapFactory)
+  factoryMock.demand.findPersistentProperties {obj, dm -> return []}
+
   ensureThrows(net.fratech.odm.exceptions.MappingException){
-    dm.loadDataMap(new Object())
+    factoryMock.use {
+      dm.loadDataMap(new Object())
+    }
+  }
+
+  ensureThrows(net.fratech.odm.exceptions.MappingException){
+    dm.loadDataMap(new Object(), null)
   }
 }
 
-it "should throw a ODMException when loading with an empty columns list", {
+it "should throw a MappingException when loading with an empty columns list", {
   ensureThrows(net.fratech.odm.exceptions.MappingException){
     dm.loadDataMap(foo, [])
   }

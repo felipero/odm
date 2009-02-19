@@ -1,6 +1,8 @@
 import net.fratech.odm.DataMapImpl
 import net.fratech.odm.DataMap
+import net.fratech.odm.exceptions.MappingException
 import net.fratech.odm.util.PropertyMapFactory
+import net.fratech.odm.PropertyMapImpl
 
 class Foo {
   String bar
@@ -8,6 +10,18 @@ class Foo {
 }
 
 it "should find the correct properties", {
-  propertyMapList = PropertyMapFactory.findPersistentProperties(new Foo())
-  propertyMapList.shouldBe true
+  dm = new DataMapImpl()
+  propertyMapList = PropertyMapFactory.findPersistentProperties(new Foo(), dm)
+  propertyMapList.shouldNotBe null
+  propertyMapList.isEmpty().shouldNotBe true
+  propertyMapList.size().shouldBe 2
+  propertyMapList.shouldHave new PropertyMapImpl("bar","bar", String, dm)
+  propertyMapList.shouldHave new PropertyMapImpl("foobar","fooBar", int.class, dm)
+  propertyMapList.shouldNotHave new PropertyMapImpl("foobara","fooBara", int.class, dm)
+}
+
+it "should return null when loading with a object that is null or has no persistent properties", {
+  ensureThrows(MappingException){
+    propertyMapList = PropertyMapFactory.findPersistentProperties(new Object(), new DataMapImpl())
+  }
 }
