@@ -27,7 +27,7 @@ class DataMapImpl implements DataMap {
     this.propertyMapList = propertyMapList.findAll { it instanceof PropertyMap }
   }
 
-   public boolean equals(DataMapImpl other){
+   public boolean equals(DataMapImpl other) {
      if(!other){
        return false
      }
