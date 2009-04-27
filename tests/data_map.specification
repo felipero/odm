@@ -2,6 +2,7 @@ import net.fratech.odm.DataMapImpl
 import net.fratech.odm.DataMap
 import net.fratech.odm.PropertyMapImpl
 import net.fratech.odm.util.PropertyMapFactory
+import org.gmock.GMockController
 
 class Foo {
   String bar
@@ -11,6 +12,7 @@ class Foo {
 before "", {
   dm = new DataMapImpl()
   foo = new Foo()
+  gmc = new GMockController()
 }
 
 it "should create a DataMap instance", {
@@ -19,13 +21,14 @@ it "should create a DataMap instance", {
 }
 
 it "should load a DataMap based on domain objects", {
-  def factoryMock = new groovy.mock.interceptor.StubFor(net.fratech.odm.util.PropertyMapFactory)
-  factoryMock.demand.findPersistentProperties {obj, dm -> return [new PropertyMapImpl(null, null, null, null), new PropertyMapImpl(null, null, null, null)]}
 
-  factoryMock.use {
+  mock = gmc.mock(net.fratech.odm.util.PropertyMapFactory)
+  mock.static.findPersistentProperties(foo, dm).returns([new PropertyMapImpl(null, null, null, null), new PropertyMapImpl(null, null, null, null)])
+
+  gmc.play{
     dm.loadDataMap(foo)
   }
-  
+
   dm.tableName.shouldBe "foo"
   dm.domainClass.shouldBe Foo
   dm.propertyMapList.shouldNotBe null
@@ -35,7 +38,7 @@ it "should load a DataMap based on domain objects", {
 
 it "should load a DataMap based on domain objects when passing the property map list", {
   dm.loadDataMap(foo, [new PropertyMapImpl(null, null, null, null), new PropertyMapImpl(null, null, null, null)])
-  
+
   dm.tableName.shouldBe "foo"
   dm.domainClass.shouldBe Foo
   dm.propertyMapList.shouldNotBe null
@@ -51,11 +54,11 @@ it "should ignore and not add a non PropertyMap instance in the property map lis
 }
 
 it "should throw a MappingException when loading with a object that has no persistent properties", {
-  def factoryMock = new groovy.mock.interceptor.StubFor(net.fratech.odm.util.PropertyMapFactory)
-  factoryMock.demand.findPersistentProperties {obj, dm -> return []}
+
+  mock = gmc.mock(net.fratech.odm.util.PropertyMapFactory)
 
   ensureThrows(net.fratech.odm.exceptions.MappingException){
-    factoryMock.use {
+    gmc.play{
       dm.loadDataMap(new Object())
     }
   }
@@ -79,3 +82,4 @@ it "should throw a MappingException when loading with a null object", {
     dm.loadDataMap(null, null)
   }
 }
+

@@ -46,6 +46,8 @@ target(initDirs: 'Create all the required directories') {
 target(compile: 'Compile source to build directory.') {
     depends(initDirs)
     groovyc(srcDir, classDir)
+
+    ant.javac(srcdir: srcDir, destdir: classDir)
     
     ant.copy(todir:"${classDir}"){
       fileset(dir:"${resourcesDir}")
@@ -55,9 +57,9 @@ target(compile: 'Compile source to build directory.') {
 target(test: 'Run the test suite for the code') {
   depends("compile")
 
-  ant.taskdef(name:"easyb", classname:"org.disco.easyb.ant.BehaviorRunnerTask"){
+  ant.taskdef(name:"easyb", classname:"org.easyb.ant.BehaviorRunnerTask"){
     classpath(){
-      pathelement(location:"${libDir}/easyb-0.9.4.jar")
+      pathelement(location:"${libDir}/easyb-0.9.6.jar")
     }
   }
 
@@ -65,11 +67,11 @@ target(test: 'Run the test suite for the code') {
 
     classpath() {
       path(refid:"build.classpath")
-      pathelement(location:"${libDir}/easyb-0.9.4.jar")
+      pathelement(location:"${libDir}/easyb-0.9.6.jar")
       pathelement(location:"tests")
     }
 
-    report(location: "${reportsDir}/easyb-report.xml", format: "xml")
+    report(location: "${reportsDir}/easyb-report.html", format: "html")
     report(location: "${reportsDir}/story-report.txt", format: "txtstory")
     report(location: "${reportsDir}/specification-report.txt", format: "txtspecification")
 
